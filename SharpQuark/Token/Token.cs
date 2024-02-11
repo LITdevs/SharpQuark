@@ -14,16 +14,15 @@ public class TokenException(string? exception = null) : Exception(exception);
 
 public class Token
 {
-    private string? token;
-    private TokenType type;
-    private DateTime expiresAt;
-    private DateTime createdAt;
+    private string? _token;
+    private TokenType _type;
+    private DateTime _expiresAt;
     public bool Expired
     {
         get
         {
-            if (type == TokenType.Refresh) return false;
-            return DateTime.Now > expiresAt;
+            if (_type == TokenType.Refresh) return false;
+            return DateTime.Now > _expiresAt;
         }
     }
 
@@ -45,7 +44,7 @@ public class Token
         var prefixPart = tokenParts[0];
         var typePart = tokenParts[1];
         // randomPart can be ignored, it has no useful data
-        var creationTimePart = tokenParts[3];
+        // creationTimePart can also be ignored, turns out we don't care when the token was made
         var expirationTimePart = tokenParts[4];
 
         if (prefixPart != "LQ") throw new TokenException($"Wrong token prefix: expected 'LQ', got {prefixPart}");
@@ -56,14 +55,11 @@ public class Token
             _ => throw new TokenException($"Invalid token type: expected one of 'RE', 'AC', got {typePart}")
         };
 
-        DateTime creationDate;
         DateTime expiryDate;
         try
         {
-            var creationTime = Base36Converter.ConvertFrom(creationTimePart);
             var expiryTime = Base36Converter.ConvertFrom(expirationTimePart);
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            creationDate = origin.AddMilliseconds(creationTime);
             expiryDate = origin.AddMilliseconds(expiryTime);
         }
         catch (Exception e)
@@ -75,25 +71,23 @@ public class Token
         {
             return new AccessToken
             {
-                token = token,
-                type = tokenType,
-                expiresAt = expiryDate,
-                createdAt = creationDate
+                _token = token,
+                _type = tokenType,
+                _expiresAt = expiryDate
             };
         }
 
         return new RefreshToken
         {
-            token = token,
-            type = tokenType,
-            expiresAt = expiryDate,
-            createdAt = creationDate
+            _token = token,
+            _type = tokenType,
+            _expiresAt = expiryDate
         };
     }
 
     public override string? ToString()
     {
-        return token;
+        return _token;
     }
 }
 

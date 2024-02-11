@@ -1,29 +1,27 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace SharpQuark.ApiResult;
 
 public class BaseApiResult
 {
     [JsonProperty("request")]
-    public Request Request;
+    public required Request Request;
     [JsonProperty("response")]
-    public Response Response;
+    public Response? Response;
 }
 
 public class Request
 {
     [JsonProperty("status_code")]
-    public int StatusCode;
+    public required int StatusCode;
     [JsonProperty("success")]
-    public bool Success;
+    public required bool Success;
     [JsonProperty("cat")]
-    public string Cat;
+    public required string Cat;
 }
 
 public class Response
 {
     [JsonProperty("message")]
-    public string Message;
-    public JObject RawData;
+    public required string Message;
 }

@@ -1,11 +1,9 @@
-﻿using System.Diagnostics;
+﻿namespace SharpQuark.Token;
 
-namespace SharpQuark.Token;
-
-public class TokenCredential
+public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
 {
-    public AccessToken AccessToken;
-    public readonly RefreshToken RefreshToken;
+    public AccessToken AccessToken = accessToken;
+    public readonly RefreshToken RefreshToken = refreshToken;
 
     public bool Expired => AccessToken.Expired;
     
@@ -23,16 +21,10 @@ public class TokenCredential
         }
     }
 
-    public TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
-    {
-        AccessToken = accessToken;
-        RefreshToken = refreshToken;
-    }
-    
     public static async Task<TokenCredential> Login(string email, string password, NetworkInformation networkInformation)
     {
         // Create temporary Lightquark instance
-        var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation);
+        var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true);
         var res = await tempLq.AuthToken(email, password);
         var accessToken = (AccessToken)Token.From(res.Response.AccessToken);
         var refreshToken = (RefreshToken)Token.From(res.Response.RefreshToken);
