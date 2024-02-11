@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Reflection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SharpQuark.Token;
 
 namespace SharpQuark;

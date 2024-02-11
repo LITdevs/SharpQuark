@@ -1,7 +1,7 @@
 ﻿## C# API Wrapper for the Lightquark API
 
 > [!WARNING]
-> &#x26a0;&#xfe0f; Supports API Versions V3 and up. V1 and V2 **ARE NOT** and **WILL NOT** be supported
+> Supports API Versions V3 and up. V1 and V2 **ARE NOT** and **WILL NOT** be supported
 
 ### Usage
 
@@ -15,7 +15,7 @@ var netInfo = await NetworkInformation.GetNetwork("https://equinox.lightquark.ne
 
 // To log in or make any other API calls we need to get the access and refresh tokens, which can be done in two
 // different ways. For example with email and password:
-var tokens = await TokenCredential.Login("testuser@litdevs.org", "wordpass", netInfo);
+var tokens = await TokenCredential.Login("email", "password", netInfo);
 // Or alternatively stored tokens can be used to get the TokenCredential directly, for example from strings:
 var tokens2 = new TokenCredential((AccessToken)Token.From("access token"), (RefreshToken)Token.From("refresh token"));
 
