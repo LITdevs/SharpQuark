@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpQuark", "SharpQuark\SharpQuark.csproj", "{491A7350-0B0A-4042-8437-44396BD53065}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpQuarkClient", "SharpQuarkClient\SharpQuarkClient.csproj", "{4C11D071-E21E-4C1F-A506-F5C5C22E19EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{491A7350-0B0A-4042-8437-44396BD53065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{491A7350-0B0A-4042-8437-44396BD53065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{491A7350-0B0A-4042-8437-44396BD53065}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{491A7350-0B0A-4042-8437-44396BD53065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C11D071-E21E-4C1F-A506-F5C5C22E19EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C11D071-E21E-4C1F-A506-F5C5C22E19EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C11D071-E21E-4C1F-A506-F5C5C22E19EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C11D071-E21E-4C1F-A506-F5C5C22E19EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
