@@ -22,6 +22,23 @@ public partial class Lightquark
         return parsedApiResult ?? throw new Exception("/auth/token API Result is null");
     }
     
+    // /auth/register
+    public async Task<AuthTokenApiResult> AuthRegister(string email, string password, string username)
+    {
+        var rawApiResult = await Call("/auth/register", "POST", new ApiCallOptions
+        {
+            SkipAuth = true,
+            Body = new
+            {
+                email, password, username
+            }
+        });
+
+        var parsedApiResult = JsonConvert.DeserializeObject<AuthTokenApiResult>(rawApiResult);
+        
+        return parsedApiResult ?? throw new Exception("/auth/register API Result is null");
+    }
+    
     // /auth/refresh
     public async Task<AuthRefreshApiResult> AuthRefresh()
     {

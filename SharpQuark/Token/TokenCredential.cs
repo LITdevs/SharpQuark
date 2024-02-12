@@ -30,4 +30,14 @@ public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
         var refreshToken = (RefreshToken)Token.From(res.Response.RefreshToken);
         return new TokenCredential(accessToken, refreshToken);
     }
+    
+    public static async Task<TokenCredential> Register(string email, string password, string username, NetworkInformation networkInformation)
+    {
+        // Create temporary Lightquark instance
+        var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true);
+        var res = await tempLq.AuthRegister(email, password, username);
+        var accessToken = (AccessToken)Token.From(res.Response.AccessToken);
+        var refreshToken = (RefreshToken)Token.From(res.Response.RefreshToken);
+        return new TokenCredential(accessToken, refreshToken);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SharpQuark.Objects.Id;
 
 namespace SharpQuark.Objects;
 
@@ -9,7 +10,7 @@ public class User
     [JsonProperty("isBot")]
     public bool IsBot;
     [JsonProperty("_id")]
-    public required string Id;
+    public required UserId Id;
     [JsonProperty("username")]
     public required string Username;
     [JsonProperty("email")]

@@ -18,6 +18,8 @@ var netInfo = await NetworkInformation.GetNetwork("https://equinox.lightquark.ne
 var tokens = await TokenCredential.Login("email", "password", netInfo);
 // Or alternatively stored tokens can be used to get the TokenCredential directly, for example from strings:
 var tokens2 = new TokenCredential((AccessToken)Token.From("access token"), (RefreshToken)Token.From("refresh token"));
+// Another alternative is to register a new account, since that also returns tokens
+var tokens3 = await TokenCredential.Register("email", "password", "username", netInfo);
 
 // With TokenCredential and NetworkInformation we can actually create the Lightquark instance
 var lq = new Lightquark(tokens, netInfo);
