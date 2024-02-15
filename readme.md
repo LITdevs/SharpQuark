@@ -32,5 +32,16 @@ Console.WriteLine(userMe.Response.User.Username); // Test_User
 var userById = await lq.UserById("62b3515989cdb45c9e06e010");
 Console.WriteLine($"{userById.Response.User.Status?.Type} {userById.Response.User.Status?.Content}"); // Playing Stardew Valley
 
+// Get a channel
+var speakySpeaky = await lq.ChannelById(new ChannelId("643aa2e550c913775aec2057"));
+Console.WriteLine(speakySpeaky.Id);
+
+// Messages will be automatically populated and sorted, lets get the content of the latest message
+Console.WriteLine(speakySpeaky.Messages.Last().Content);
+
+// Getting the same channel again will not make an API call, instead the already known channel is returned
+var speakySpeaky2 = await lq.ChannelById(new ChannelId("643aa2e550c913775aec2057"));
+
+Console.WriteLine(speakySpeaky2.Messages.Last().Timestamp);
 
 ```
