@@ -3,7 +3,22 @@
 namespace SharpQuark.Objects.Id;
 
 [JsonConverter(typeof(UserIdConverter))]
-public class UserId(string id) : BaseId(id);
+public class UserId(string id) : BaseId(id)
+{
+    public override bool Equals(object? obj)
+    {
+        if (obj is UserId other)
+        {
+            return Id == other.Id;
+        }
+        return false;
+    }
+    
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+}
 
 public class UserIdConverter : JsonConverter
 {

@@ -19,6 +19,9 @@ public class Message
 
     [JsonProperty("timestamp")] 
     public required long JsTimestamp;
+    
+    [JsonIgnore]
+    public DateTimeOffset Timestamp => DateTimeOffset.FromUnixTimeMilliseconds(JsTimestamp);
 
     [JsonProperty("edited")] 
     public required bool Edited;
@@ -31,4 +34,23 @@ public class Message
 
     [JsonProperty("author")]
     public required User Author;
+
+    [JsonIgnore] public Channel Channel = null!;
+
+}
+
+
+public class TimestampComparer : IComparer<Message>
+{
+    public int Compare(Message? x, Message? y)
+    {
+        if (x == null || y == null)
+        {
+            throw new ArgumentException("Messages cannot be null");
+        }
+
+        // First, compare by JsTimestamp
+        var timestampComparison = x.JsTimestamp.CompareTo(y.JsTimestamp);
+        return timestampComparison != 0 ? timestampComparison : x.Id.CompareTo(y.Id);
+    }
 }

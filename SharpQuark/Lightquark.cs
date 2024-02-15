@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Reflection;
 using Newtonsoft.Json;
+using SharpQuark.Objects;
 using SharpQuark.Token;
 
 namespace SharpQuark;
@@ -14,6 +15,7 @@ public partial class Lightquark
     private readonly Uri _baseUri;
     private readonly TokenCredential _tokenCredential;
     private readonly string _agent;
+    private List<Channel> _channels;
     
     public Lightquark(TokenCredential credential, NetworkInformation networkInformation, string? agent = null, string version = "v3", bool suppressStartupMessage = false)
     {
@@ -22,6 +24,7 @@ public partial class Lightquark
         _agent = agent ?? $"SharpQuark {Assembly.GetExecutingAssembly().GetName().Version}";
         if (networkInformation.BaseUrl == null) throw new Exception("Invalid network");
         _baseUri = new Uri(networkInformation.BaseUrl);
+        _channels = new List<Channel>();
         if (!suppressStartupMessage)
         {
             Console.WriteLine($"Running {_agent}");

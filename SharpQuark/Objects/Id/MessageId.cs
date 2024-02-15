@@ -3,7 +3,22 @@
 namespace SharpQuark.Objects.Id;
 
 [JsonConverter(typeof(MessageIdConverter))]
-public class MessageId(string id) : BaseId(id);
+public class MessageId(string id) : BaseId(id)
+{
+    public override bool Equals(object? obj)
+    {
+        if (obj is MessageId other)
+        {
+            return Id == other.Id;
+        }
+        return false;
+    }
+    
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
+    }
+}
 
 public class MessageIdConverter : JsonConverter
 {
