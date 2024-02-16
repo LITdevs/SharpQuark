@@ -1,13 +1,20 @@
 ﻿using Newtonsoft.Json;
 using SharpQuark.ApiResult;
+using SharpQuark.Objects;
 using SharpQuark.Objects.Id;
 
 namespace SharpQuark;
 
 public partial class Lightquark
 {
+    public async Task<User> UserMe()
+    {
+        var user = await UserMeRaw();
+        return user.Response.User;
+    }
+    
     // /user/me
-    public async Task<UserMeApiResult> UserMe()
+    public async Task<UserMeApiResult> UserMeRaw()
     {
         var rawApiResult = await Call("/user/me");
 
@@ -16,8 +23,14 @@ public partial class Lightquark
         return parsedApiResult ?? throw new Exception("/user/me API Result is null");
     }
     
+    public async Task<User> UserById(UserId userId)
+    {
+        var user = await UserByIdRaw(userId);
+        return user.Response.User;
+    }
+    
     // /user/:userId
-    public async Task<UserApiResult> UserById(UserId userId)
+    public async Task<UserApiResult> UserByIdRaw(UserId userId)
     {
         var rawApiResult = await Call($"/user/{userId}");
 

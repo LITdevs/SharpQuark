@@ -1,37 +1,86 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Net.WebSockets;
 using System.Reflection;
 using Newtonsoft.Json;
 using SharpQuark.Objects;
 using SharpQuark.Token;
+using Websocket.Client;
 
 namespace SharpQuark;
 
 public class UnsupportedVersionException(string e) : Exception(e);
 
-public partial class Lightquark
+public partial class Lightquark : IDisposable
 {
+    private static int _sid;
+    private readonly int _id;
     private readonly HttpClient _http = new();
+    private static readonly string[] UnsupportedVersions = ["v1", "v2"];
     private readonly string _version;
-    private readonly Uri _baseUri;
     private readonly TokenCredential _tokenCredential;
     private readonly string _agent;
-    private List<Channel> _channels;
+    private WebsocketClient? _client;
+    public readonly NetworkInformation Network;
+    private Uri BaseUri => new (Network.BaseUrl ?? throw new Exception("Invalid network"));
+    private Timer? _heartbeatTimer;
     
-    public Lightquark(TokenCredential credential, NetworkInformation networkInformation, string? agent = null, string version = "v3", bool suppressStartupMessage = false)
+    public Lightquark(TokenCredential credential, NetworkInformation networkInformation, string? agent = null, string version = "v3", bool suppressStartupMessage = false, bool connectWebsocket = true)
     {
+        _id = _sid;
+        _sid++;
         _tokenCredential = credential;
         _version = version;
         _agent = agent ?? $"SharpQuark {Assembly.GetExecutingAssembly().GetName().Version}";
-        if (networkInformation.BaseUrl == null) throw new Exception("Invalid network");
-        _baseUri = new Uri(networkInformation.BaseUrl);
-        _channels = new List<Channel>();
+        Network = networkInformation;
         if (!suppressStartupMessage)
         {
-            Console.WriteLine($"Running {_agent}");
+            Console.WriteLine($"[{_id}] Running {_agent}");
         }
+
+        // Gateway
+        if (!connectWebsocket) return;
+        _connectGateway();
+
     }
 
-    private static readonly string[] UnsupportedVersions = ["v1", "v2"];
+    private void _connectGateway()
+    {
+        if (Network.Gateway == null) throw new Exception("Network information missing gateway uri when trying to connect gateway.");
+        var clientFactory = new Func<ClientWebSocket>(() =>
+        {
+            var client = new ClientWebSocket();
+            client.Options.AddSubProtocol(_tokenCredential.AccessToken.ToString()!);
+            return client;
+        });
+        _client = new WebsocketClient(new Uri(Network.Gateway), clientFactory);
+        
+        // Reconnections
+        _client.ReconnectTimeout = TimeSpan.FromSeconds(30);
+        _client.ReconnectionHappened.Subscribe(info =>
+            Debug.WriteLine($"[{_id}] Reconnection happened, type: {info.Type}"));
+
+        _client.DisconnectionHappened.Subscribe(info =>
+        {
+            Debug.WriteLine($"[{_id}] Disconnection happened, type: {info.Type}");
+            if (info.Exception != null) Console.Error.WriteLine(info.Exception);
+        });
+        
+        // Start
+        _client.MessageReceived.Subscribe(msg => GatewayMessage(msg));
+        _client.StartOrFail();
+        
+        _heartbeatTimer = new Timer(
+            _ =>
+            {
+                SendGateway(new GatewayMessage("heartbeat", "alive"));
+                Debug.WriteLine($"[{_id}] Sent heartbeat message.");
+            },
+            null,
+            TimeSpan.Zero,
+            TimeSpan.FromSeconds(15));
+    }
+
     // ReSharper disable once MemberCanBePrivate.Global
     public async Task<string> Call(string endpoint, string method = "GET", ApiCallOptions? options = null)
     {
@@ -53,7 +102,7 @@ public partial class Lightquark
         }
         
         // Use request specific version if available
-        var requestUri = new Uri(_baseUri, $"{options?.Version ?? _version}/{endpoint}");
+        var requestUri = new Uri(BaseUri, $"{options?.Version ?? _version}/{endpoint}");
 
         var request = new HttpRequestMessage
         {
@@ -85,6 +134,15 @@ public partial class Lightquark
         var resultString = await result.Content.ReadAsStringAsync();
 
         return resultString;
+    }
+
+    public void Dispose()
+    {
+        Debug.WriteLine($"[{_id}] Goodbye :(");
+        _http.Dispose();
+        _client?.Dispose();
+        _heartbeatTimer?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
 

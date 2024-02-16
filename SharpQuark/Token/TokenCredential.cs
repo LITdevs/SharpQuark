@@ -1,4 +1,6 @@
-﻿namespace SharpQuark.Token;
+﻿using SharpQuark.ApiResult;
+
+namespace SharpQuark.Token;
 
 public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
 {
@@ -24,18 +26,27 @@ public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
     public static async Task<TokenCredential> Login(string email, string password, NetworkInformation networkInformation)
     {
         // Create temporary Lightquark instance
-        var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true);
-        var res = await tempLq.AuthToken(email, password);
+        AuthTokenApiResult res;
+        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true, false))
+        {
+            res = await tempLq.AuthToken(email, password);
+        }
+
         var accessToken = (AccessToken)Token.From(res.Response.AccessToken);
         var refreshToken = (RefreshToken)Token.From(res.Response.RefreshToken);
+        
         return new TokenCredential(accessToken, refreshToken);
     }
     
     public static async Task<TokenCredential> Register(string email, string password, string username, NetworkInformation networkInformation)
     {
         // Create temporary Lightquark instance
-        var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true);
-        var res = await tempLq.AuthRegister(email, password, username);
+        AuthTokenApiResult res;
+        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true))
+        {
+            res = await tempLq.AuthRegister(email, password, username);
+        }
+
         var accessToken = (AccessToken)Token.From(res.Response.AccessToken);
         var refreshToken = (RefreshToken)Token.From(res.Response.RefreshToken);
         return new TokenCredential(accessToken, refreshToken);
