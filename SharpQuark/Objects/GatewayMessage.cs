@@ -12,4 +12,5 @@ public struct GatewayMessage(string @event, string message, string? state = null
 public class GatewayEventBase
 {
     [JsonProperty("eventId")] public required string Event;
+    [JsonProperty("state")] public string? State;
 }
