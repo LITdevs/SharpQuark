@@ -27,7 +27,7 @@ public class Message
     public required bool Edited;
 
     [JsonProperty("attachments")]
-    public required string[] AttachmentLinks; // TODO: Attachment objects with metadata
+    public required Attachment[] Attachment;
 
     [JsonProperty("specialAttributes")]
     public object[] SpecialAttributes = [];
@@ -37,6 +37,21 @@ public class Message
 
     [JsonIgnore] public Channel Channel = null!;
 
+}
+
+public class Attachment
+{
+    [JsonProperty("url")] 
+    public required Uri Uri;
+
+    [JsonProperty("size")] 
+    public long Size;
+
+    [JsonProperty("type")] 
+    public required string ContentType;
+
+    [JsonProperty("filename")] 
+    public required string FileName;
 }
 
 

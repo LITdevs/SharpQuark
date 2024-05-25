@@ -39,6 +39,7 @@ public class Token
     public static Token From(string token)
     {
         var tokenParts = token.Split(".");
+        Console.WriteLine(token);
         if (tokenParts.Length != 5)
             throw new TokenException($"Wrong token part count: expected 5, got {tokenParts.Length}");
         var prefixPart = tokenParts[0];

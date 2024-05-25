@@ -29,11 +29,11 @@ public class ChannelConverter : JsonConverter
 
         // Deserialize other properties
         var name = jsonObject.GetValue("name")?.ToObject<string>();
-        var quarkId = jsonObject.GetValue("quark")?.ToObject<QuarkId>();
+        var quark = jsonObject.GetValue("quark")?.ToObject<Quark>();
         var description = jsonObject.GetValue("description")?.ToObject<string>();
 
         // Create new Channel instance
-        channel = new Channel(channelId, name ?? throw new Exception("Channel Name null"), quarkId ?? throw new Exception("Channel Quark ID null"), description);
+        channel = new Channel(channelId, name ?? throw new Exception("Channel Name null"), quark ?? throw new Exception("Channel Quark ID null"), description);
         Instances[channelId] = channel;
         return channel;
     }
@@ -49,7 +49,7 @@ public class Channel
     [JsonProperty("description")]
     public string Description;
     [JsonProperty("quark")]
-    public QuarkId QuarkId;
+    public Quark Quark;
     [JsonProperty("messages")] 
     public SortedSet<Message> Messages;
 
@@ -57,11 +57,11 @@ public class Channel
 
     [JsonIgnore] private bool _initialLoad;
 
-    internal Channel(ChannelId id, string name, QuarkId quarkId, string? description)
+    internal Channel(ChannelId id, string name, Quark quark, string? description)
     {
         Id = id;
         Name = name;
-        QuarkId = quarkId;
+        Quark = quark;
         Description = description ?? string.Empty;
         Messages = new SortedSet<Message>(new TimestampComparer());
     }

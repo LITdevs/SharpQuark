@@ -17,7 +17,7 @@ public class UserApiResult : BaseApiResult
 
 public class UserMeResponse : Response
 {
-    [JsonProperty("jwtData")]
+    [JsonProperty("user")]
     public required User User;
 }
 

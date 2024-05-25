@@ -27,7 +27,7 @@ public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
     {
         // Create temporary Lightquark instance
         AuthTokenApiResult res;
-        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true, false))
+        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v4", true, false))
         {
             res = await tempLq.AuthToken(email, password);
         }
@@ -42,7 +42,7 @@ public class TokenCredential(AccessToken accessToken, RefreshToken refreshToken)
     {
         // Create temporary Lightquark instance
         AuthTokenApiResult res;
-        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v3", true))
+        using (var tempLq = new Lightquark(new TokenCredential(new AccessToken(), new RefreshToken()), networkInformation, null, "v4", true))
         {
             res = await tempLq.AuthRegister(email, password, username);
         }

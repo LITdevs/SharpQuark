@@ -20,6 +20,9 @@ public partial class Lightquark
                 case "heartbeat":
                     Debug.WriteLine("Heartbeat received");
                     return;
+                case "authenticate":
+                    Debug.WriteLine("Authenticated");
+                    return;
                 default:
                     Console.WriteLine($"Unimplemented event received {baseMessage.Event}");
                     break;

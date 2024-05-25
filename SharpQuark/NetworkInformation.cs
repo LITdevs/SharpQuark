@@ -31,10 +31,10 @@ public class NetworkInformation
     [JsonProperty("capabilities")]
     public object? Capabilities;
 
-    public static async Task<NetworkInformation> GetNetwork(string baseUrl)
+    public static async Task<NetworkInformation> GetNetwork(string baseUrl, string version = "v4")
     {
         var baseUri = new Uri(baseUrl);
-        var res = await Http.GetAsync(new Uri(baseUri, "/v3/network"));
+        var res = await Http.GetAsync(new Uri(baseUri, $"/{version}/network"));
         var rawApiResult = await res.Content.ReadAsStringAsync();
         var parsedApiResult = JsonConvert.DeserializeObject<NetworkInformation>(rawApiResult);
         return parsedApiResult ?? throw new InvalidOperationException();

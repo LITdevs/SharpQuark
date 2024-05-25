@@ -33,7 +33,7 @@ public class QuarkIdConverter : JsonConverter
         {
             return new QuarkId((string?)reader.Value ?? string.Empty);
         }
-        throw new JsonSerializationException("Unexpected token type.");
+        throw new JsonSerializationException($"Unexpected token type. ({reader.TokenType})");
     }
 
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)

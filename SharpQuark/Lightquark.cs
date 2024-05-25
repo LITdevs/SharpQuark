@@ -16,7 +16,7 @@ public partial class Lightquark : IDisposable
     private static int _sid;
     private readonly int _id;
     private readonly HttpClient _http = new();
-    private static readonly string[] UnsupportedVersions = ["v1", "v2"];
+    private static readonly string[] UnsupportedVersions = ["v1", "v2", "v3"];
     private readonly string _version;
     private readonly TokenCredential _tokenCredential;
     private readonly string _agent;
@@ -25,7 +25,7 @@ public partial class Lightquark : IDisposable
     private Uri BaseUri => new (Network.BaseUrl ?? throw new Exception("Invalid network"));
     private Timer? _heartbeatTimer;
     
-    public Lightquark(TokenCredential credential, NetworkInformation networkInformation, string? agent = null, string version = "v3", bool suppressStartupMessage = false, bool connectWebsocket = true)
+    public Lightquark(TokenCredential credential, NetworkInformation networkInformation, string? agent = null, string version = "v4", bool suppressStartupMessage = false, bool connectWebsocket = true)
     {
         _id = _sid;
         _sid++;
@@ -50,7 +50,6 @@ public partial class Lightquark : IDisposable
         var clientFactory = new Func<ClientWebSocket>(() =>
         {
             var client = new ClientWebSocket();
-            client.Options.AddSubProtocol(_tokenCredential.AccessToken.ToString()!);
             return client;
         });
         _client = new WebsocketClient(new Uri(Network.Gateway), clientFactory);
@@ -67,8 +66,10 @@ public partial class Lightquark : IDisposable
         });
         
         // Start
-        _client.MessageReceived.Subscribe(msg => GatewayMessage(msg));
+        _client.MessageReceived.Subscribe(GatewayMessage);
         _client.StartOrFail();
+        
+        SendGateway(new AuthenticateGatewayMessage("authenticate", _tokenCredential.AccessToken));
         
         _heartbeatTimer = new Timer(
             _ =>
@@ -77,7 +78,7 @@ public partial class Lightquark : IDisposable
                 Debug.WriteLine($"[{_id}] Sent heartbeat message.");
             },
             null,
-            TimeSpan.Zero,
+            TimeSpan.FromSeconds(1),
             TimeSpan.FromSeconds(15));
     }
 
@@ -93,7 +94,7 @@ public partial class Lightquark : IDisposable
         }
         // Prevent falling over for predictable reasons
         if (UnsupportedVersions.Any(v => v == (options?.Version ?? _version)))
-            throw new UnsupportedVersionException("SharpQuark does not support API versions 1 and 2 due to authentication differences");
+            throw new UnsupportedVersionException("SharpQuark only supports version 4.");
 
         // Allow using both "/user/me" and "user/me"
         if (endpoint.StartsWith('/'))
